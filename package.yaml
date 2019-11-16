@@ -1,0 +1,73 @@
+name:                solitaire-stats
+version:             0.1.0.0
+github:              "asariley/solitaire-stats"
+license:             BSD3
+author:              "Asa Riley"
+maintainer:          "asa.riley@gmail.com"
+copyright:           "2019 Asa Riley"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+description:         Please see the README on GitHub at <https://github.com/asariley/solitaire-stats#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- classy-prelude
+- containers
+- lens
+- time
+- QuickCheck
+
+default-extensions:
+  - DataKinds
+  - FlexibleContexts
+  - FlexibleInstances
+  - GeneralizedNewtypeDeriving
+  - MultiParamTypeClasses
+  - NamedFieldPuns
+  - NoImplicitPrelude
+  - OverloadedStrings
+  - PolyKinds
+  - RankNTypes
+  - RecordWildCards
+  - ScopedTypeVariables
+  - StandaloneDeriving
+  - TemplateHaskell
+  - TupleSections
+  - TypeFamilies
+  - TypeOperators
+  - ViewPatterns
+
+ghc-options:
+  - -Wall
+  - -Werror
+
+library:
+  source-dirs: src
+
+executables:
+  solitaire-stats-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -Wall
+    - -Werror
+    dependencies:
+    - solitaire-stats
+
+tests:
+  solitaire-stats-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - hspec
+    - hspec-expectations
+    - solitaire-stats
