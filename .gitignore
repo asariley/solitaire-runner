@@ -2,3 +2,4 @@
 simple-hpack.cabal
 *~
 .DS_Store
+*.prof
