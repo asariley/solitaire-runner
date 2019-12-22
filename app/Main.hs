@@ -2,7 +2,7 @@ module Main where
 
 import ClassyPrelude
 
-import Types (SinglePlayer(..), sortedDeck)
+import Types (Deck, SinglePlayer(..), sortedDeck, exampleDeck)
 import Data.Time.Clock (diffUTCTime)
 import qualified Klondike
 import Runner (winnable, winnableIO)
@@ -11,10 +11,11 @@ import Test.QuickCheck (shuffle, generate)
 
 main :: IO ()
 main = do
-  decks <- generate . sequence . take 1 . repeat $ shuffle sortedDeck
-  putStrLn $ "generated " <> tshow (length decks) <> " decks"
+  decks <- profilingDeck
+  putStrLn $ "trying " <> tshow (length decks) <> " decks"
   results <- forM decks $ \ deck -> do
     begin <- getCurrentTime
+    -- putStrLn $ tshow deck
     let result = klondikeResult . newGame $ deck
     putStrLn $ bool "LOSS" "WIN" result
     end <- getCurrentTime
@@ -31,3 +32,9 @@ klondikeResult = winnable
 
 klondikeResultLogged :: Klondike.SolitaireGame -> IO Bool
 klondikeResultLogged = winnableIO
+
+tenRandomDecks :: IO [Deck]
+tenRandomDecks = generate . sequence . take 10 . repeat $ shuffle sortedDeck
+
+profilingDeck :: IO [Deck]
+profilingDeck = pure [exampleDeck]
