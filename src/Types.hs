@@ -13,12 +13,14 @@ toColor SuitDiamonds = ColorRed
 toColor SuitClubs    = ColorBlack
 
 data Suit = SuitHearts | SuitSpades | SuitDiamonds | SuitClubs
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Show, Generic)
+
+instance Hashable Suit
 
 allSuits :: [Suit]
 allSuits = [SuitHearts, SuitSpades, SuitDiamonds, SuitClubs]
 
-newtype CardNumber = CardNumber { unCardNumber :: Word8 } deriving (Eq, Ord, Enum, Show)
+newtype CardNumber = CardNumber { unCardNumber :: Word8 } deriving (Eq, Ord, Hashable, Enum, Show)
 
 allCardNumbers :: [CardNumber]
 allCardNumbers = map CardNumber [1..13]
@@ -32,7 +34,10 @@ queen = CardNumber 12
 data Card = Card
   { _cardSuit :: Suit
   , _cardNumber :: CardNumber
-  } deriving (Eq, Ord, Show)
+  } deriving (Eq, Show)
+
+instance Hashable Card where
+  hashWithSalt salt (Card suit num) = hashWithSalt (hashWithSalt salt num) suit
 
 makeLenses ''Card
 

@@ -11,7 +11,13 @@ data War = War
   { _myDeck :: Deck
   , _otherDeck :: Deck
   , _warPot :: Deck
-  } deriving (Eq, Ord, Show)
+  } deriving (Eq, Show)
+
+instance Hashable War where
+  hashWithSalt salt game = salt
+    `hashWithSalt` _myDeck game
+    `hashWithSalt` _otherDeck game
+    `hashWithSalt` _warPot game
 
 makeLenses ''War
 

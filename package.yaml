@@ -14,13 +14,14 @@ description:         Please see the README on GitHub at <https://github.com/asar
 dependencies:
 - base >= 4.7 && < 5
 - classy-prelude
-- containers
+- unordered-containers
 - lens
 - time
 - QuickCheck
 
 default-extensions:
   - DataKinds
+  - DeriveGeneric
   - FlexibleContexts
   - FlexibleInstances
   - GeneralizedNewtypeDeriving

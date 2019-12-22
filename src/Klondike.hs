@@ -24,7 +24,23 @@ data SolitaireGame = SolitaireGame
   , _gamePosition4     :: PositionStack
   , _gamePosition5     :: PositionStack
   , _gamePosition6     :: PositionStack
-  } deriving (Eq, Ord, Show)
+  } deriving (Eq, Show)
+
+instance Hashable SolitaireGame where
+  hashWithSalt salt game = salt
+    `hashWithSalt` _gameScoreHearts game
+    `hashWithSalt` _gameScoreSpades game
+    `hashWithSalt` _gameScoreDiamonds game
+    `hashWithSalt` _gameScoreClubs game
+    `hashWithSalt` _gameFlipped game
+    `hashWithSalt` _gameToFlip game
+    `hashWithSalt` _gamePosition0 game
+    `hashWithSalt` _gamePosition1 game
+    `hashWithSalt` _gamePosition2 game
+    `hashWithSalt` _gamePosition3 game
+    `hashWithSalt` _gamePosition4 game
+    `hashWithSalt` _gamePosition5 game
+    `hashWithSalt` _gamePosition6 game
 
 makeLenses ''SolitaireGame
 
