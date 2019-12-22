@@ -11,7 +11,7 @@ import Test.QuickCheck (shuffle, generate)
 
 main :: IO ()
 main = do
-  decks <- generate . sequence . take 10 . repeat $ shuffle sortedDeck
+  decks <- generate . sequence . take 1 . repeat $ shuffle sortedDeck
   putStrLn $ "generated " <> tshow (length decks) <> " decks"
   results <- forM decks $ \ deck -> do
     begin <- getCurrentTime

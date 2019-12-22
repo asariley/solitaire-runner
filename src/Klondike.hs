@@ -1,9 +1,9 @@
 module Klondike where
 
 import ClassyPrelude
-import Control.Lens (ALens', cloneLens, view, storing, set, over, _2)
+import Control.Lens (ALens', cloneLens, view, storing, set, over, _2, each)
 import Control.Lens.TH (makeLenses)
-import Types (Card(Card), CardNumber(CardNumber), SinglePlayer, toColor)
+import Types (Card(Card), CardNumber(CardNumber), Suit(..), SinglePlayer, toColor)
 import qualified Types as T
 
 
@@ -96,11 +96,32 @@ stackCards game = helper1 lenses []
 
 -- (remaining, moving, field)
 movableStacks :: SolitaireGame -> [([Card], [Card], ALens' SolitaireGame [Card])]
-movableStacks game = maybe id (:) (flippedStackSource $ view gameFlipped game) $ helper lenses 1 []
-  where helper (f:fs) stackIndex acc = case view (cloneLens f) game of
-          wholeStack | length wholeStack >= stackIndex -> helper (f:fs) (succ stackIndex) $ (drop stackIndex wholeStack, take stackIndex wholeStack, f) : acc
-          _ -> helper fs 1 acc
-        helper [] _ acc = acc
+movableStacks game = maybe id (:) flippedStackMoveMay $ revealingStackMoves <> scorableStackMoves 1 lenses
+  where scorableStackMoves :: Int -> [ALens' SolitaireGame [Card]] -> [([Card], [Card], ALens' SolitaireGame [Card])]
+        scorableStackMoves stackIndex (f:fs) = case splitAt stackIndex $ view (cloneLens f) game of
+          ([], _) -> scorableStackMoves 1 fs
+          (_, []) -> scorableStackMoves 1 fs
+          (c:cs, stck) | c `elem` scorableCards game -> (c:cs, stck, f) : scorableStackMoves (succ stackIndex) (f:fs)
+          _ -> scorableStackMoves (succ stackIndex) (f:fs)
+        scorableStackMoves _ [] = []
+
+        flippedStackMoveMay :: Maybe ([Card], [Card], ALens' SolitaireGame [Card])
+        flippedStackMoveMay = case view gameFlipped game of
+          (c:cs) -> Just (cs, [c], gameFlipped)
+          [] -> Nothing
+
+        revealingStackMoves = catMaybes
+          [ revealingStack (gamePosition0 . _2) $ view gamePosition0 game
+          , revealingStack (gamePosition1 . _2) $ view gamePosition1 game
+          , revealingStack (gamePosition2 . _2) $ view gamePosition2 game
+          , revealingStack (gamePosition3 . _2) $ view gamePosition3 game
+          , revealingStack (gamePosition4 . _2) $ view gamePosition4 game
+          , revealingStack (gamePosition5 . _2) $ view gamePosition5 game
+          , revealingStack (gamePosition6 . _2) $ view gamePosition6 game
+          ]
+        revealingStack _ ([], _) = Nothing
+        revealingStack _ (_, []) = Nothing
+        revealingStack f (_, stck) = Just ([], stck, f)
         lenses = [ gamePosition0 . _2
                  , gamePosition1 . _2
                  , gamePosition2 . _2
@@ -109,8 +130,15 @@ movableStacks game = maybe id (:) (flippedStackSource $ view gameFlipped game) $
                  , gamePosition5 . _2
                  , gamePosition6 . _2
                  ]
-        flippedStackSource (c:cs) = Just (cs, [c], gameFlipped)
-        flippedStackSource [] = Nothing
+
+scorableCards :: SolitaireGame -> [Card]
+scorableCards game = filter ((/= T.king) . view T.cardNumber) . over (each . T.cardNumber) succ $ topScores
+  where topScores =
+          [ Card SuitHearts (view gameScoreHearts game)
+          , Card SuitSpades (view gameScoreSpades game)
+          , Card SuitDiamonds (view gameScoreDiamonds game)
+          , Card SuitClubs (view gameScoreClubs game)
+          ]
 
 -- enforce the invariant that if there are any invisible cards there is at least one visible card on the stack
 revealStack :: ALens' SolitaireGame PositionStack -> SolitaireGame -> SolitaireGame
