@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0551ca7de91fb9b17bba830537dff95385ab32a5a4e6ef2b1f1c4b868b3efc4f
+-- hash: 6016444ec382e69c3de4991d95bf5767fda9c3ee3d255376cfb04fd59e36507a
 
 name:           solitaire-stats
 version:        0.1.0.0
@@ -16,9 +16,6 @@ license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 cabal-version:  >= 1.10
-extra-source-files:
-    ChangeLog.md
-    README.md
 
 source-repository head
   type: git
